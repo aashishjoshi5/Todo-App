@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo App</title>
+  </head>
+  <body>
+<!-- //get all todos -->
+    <h1>ToDo Lists</h1>
+    <form action="/add/todo" method="POST">
+      <input type="text" name="todo" id="todo" placeholder="Enter todo" />
+      <button type="submit">add</button>
+    </form>
+
+    <!-- update and delete individual todos  -->
+    <ul>
+      <% task.forEach(tasks => { %>
+      <li>
+        <form
+          action="/update/todo/<%= tasks._id %>"
+          method="POST"
+          style="display: inline"
+        >
+          <input
+            type="text"
+            name="updatedTask"
+            value="<%= tasks.task %>"
+            required
+          />
+          <button type="submit">Update</button>
+        </form>
+        <a href="/delete/todo/<%= tasks._id %>">Delete</a>
+      </li>
+      <% }) %>
+    </ul>
+
+<!-- update multiple todos -->
+    <form action="/update/multiple/todos" method="POST">
+      <h3>Update Multiple Todos</h3>
+      <ul>
+        <% task.forEach(tasks => { %>
+        <li>
+            <input
+            type="checkbox"
+            name="selectedTodos"
+            value="<%= tasks._id %>" 
+          />
+          <input
+            type="text"
+            name="<%= tasks._id %>"
+            value="<%= tasks.task %>"
+          />
+        </li>
+        <% }) %>
+      </ul>
+      <button type="submit">Update Selected Todos</button>
+    </form>
+
+    <!-- delete multiple todos -->
+    <form action="/delete/multiple/todos" method="POST">
+      <h3>Select Todos to Delete</h3>
+      <ul>
+        <% task.forEach(tasks => { %>
+        <li>
+          <input
+            type="checkbox"
+            name="<%= tasks._id %>"
+            value="true"
+          />
+          <%= tasks.task %>
+        </li>
+        <% }) %>
+      </ul>
+      <button type="submit">Delete Selected Todos</button>
+    </form>
+
+    <!-- add multiple todos  -->
+    <h3>Add Multiple Todos</h3>
+    <form id="addMultipleTodosForm" method="POST" action="/add/multiple/todos">
+      <div id="todoInputs">
+        <input type="text" name="todos" placeholder="Enter todo" required />
+      </div>
+      <button type="button" onclick="addTodoInput()">Add More</button>
+      <button type="submit">Submit Todos</button>
+    </form>
+    
+    <script>
+      function addTodoInput() {
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.name = 'todos';
+        newInput.placeholder = 'Enter todo';
+        newInput.required = true;
+        document.getElementById('todoInputs').appendChild(newInput);
+      }
+
+      function deleteTodo(todoId) {
+        fetch(`/delete/todo/${todoId}`, {
+          method: 'DELETE',
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log('Todo deleted:', data);
+            window.location.reload();
+          })
+          .catch((error) => console.error('Error:', error));
+      }
+    </script>
+    
+  </body>
+</html>
+
+
